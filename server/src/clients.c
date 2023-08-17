@@ -10,19 +10,19 @@ void handle_client_request(int fd, char *buffer)
     switch (opcode)
     {
     case REGISTER_REQUEST:
-        client_register(fd, buffer);
+        server_responses_register(fd, buffer);
         break;
     case LOGIN_REQUEST:
-        client_login(fd, buffer);
+        server_responses_login(fd, buffer);
         break;
     case LIST_USER_FILES_REQUEST:
-        client_list_rooms(fd, buffer);
+        server_responses_list_user_files(fd, buffer);
         break;
     case UPLOAD_FILE_REQUEST:
-        client_join_room(fd, buffer);
+        server_responses_upload_file(fd, buffer);
         break;
     case DOWNLOAD_FILE_REQUEST:
-        client_send_massage_in_room(fd, buffer);
+        server_responses_download_file(fd, buffer);
         break;
     default:
         ASSERT(0)

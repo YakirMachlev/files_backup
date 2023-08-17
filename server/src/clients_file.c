@@ -4,6 +4,73 @@
 
 static pthread_mutex_t file_lock = PTHREAD_MUTEX_INITIALIZER;
 
+uint16_t create_files_list(char *files_list, DIR *folder)
+{
+    struct dirent *result;
+    char *start;
+    uint8_t file_name_length;
+    start = files_list;
+
+    while ((result = readdir(folder)))
+    {
+        if (strcmp(result->d_name, ".") && strcmp(result->d_name, ".."))
+        {
+            file_name_length = strlen(result->d_name);
+            *(files_list++) = file_name_length;
+            strncpy(files_list, result->d_name, file_name_length);
+            files_list += file_name_length;
+        }
+    }
+    return files_list - start;
+}
+
+uint8_t count_files_in_directory(DIR *folder)
+{
+    struct dirent *result;
+    uint8_t count;
+
+    count = 0;
+    while ((result = readdir(folder)))
+    {
+        if (strcmp(result->d_name, ".") && strcmp(result->d_name, ".."))
+        {
+            ++count;
+        }
+    }
+    return count;
+}
+
+DIR *open_folder(char *path)
+{
+    DIR *folder;
+    struct dirent *result;
+    struct stat sb;
+
+    folder = NULL;
+    if (stat(path, &sb) == 0 && S_ISDIR(sb.st_mode))
+    {
+        folder = opendir(path);
+        if (access(path, F_OK) != -1)
+        {
+            if (folder)
+            {
+                return folder;
+            }
+            else
+            {
+                perror("Could not open the directory");
+                exit(1);
+            }
+        }
+        else
+        {
+            printf("The %s it cannot be opened or is not a directory\n", path);
+            exit(1);
+        }
+    }
+    return NULL;
+}
+
 bool check_name_validity(char *name)
 {
     uint8_t offset;
@@ -60,24 +127,24 @@ bool client_file_does_client_exist(char *name)
 }
 
 bool client_file_check_client_validity(char *name, char *password)
-{
-    FILE *fp;
-    char line[MAX_LINE_LENGTH];
-    uint8_t length;
-    bool valid;
-
-    pthread_mutex_lock(&file_lock);
-    fp = fopen("users.txt", "r");
-    valid = false;
-    if (fp)
     {
-        while (fgets(line, MAX_LINE_LENGTH, fp) && !valid)
+        FILE *fp;
+        char line[MAX_LINE_LENGTH];
+        uint8_t length;
+        bool valid;
+
+        pthread_mutex_lock(&file_lock);
+        fp = fopen("users.txt", "r");
+        valid = false;
+        if (fp)
         {
-            length = strchr(line, ',') - line;
-            valid = !strncmp(name, line, length) && !strncmp(password, line + length + 1, PASSWORD_MAX_LENGTH);
+            while (fgets(line, MAX_LINE_LENGTH, fp) && !valid)
+            {
+                length = strchr(line, ',') - line;
+                valid = !strncmp(name, line, length) && !strncmp(password, line + length + 1, PASSWORD_MAX_LENGTH);
+            }
+            fclose(fp);
         }
-        fclose(fp);
+        pthread_mutex_unlock(&file_lock);
+        return length;
     }
-    pthread_mutex_unlock(&file_lock);
-    return length;
-}

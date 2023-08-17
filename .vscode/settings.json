@@ -13,6 +13,10 @@
         "client_responses.h": "c",
         "protocol.h": "c",
         "clients_file.h": "c",
-        "server_responses.h": "c"
+        "server_responses.h": "c",
+        "string.h": "c",
+        "dirent.h": "c",
+        "inttypes.h": "c",
+        "types.h": "c"
     }
 }
