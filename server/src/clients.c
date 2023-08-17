@@ -1,5 +1,7 @@
 #include "clients.h"
 
+client_t *all_clients[MAX_CLIENTS];
+
 void* clients_handler(void *arg)
 {
     int listener;
@@ -8,10 +10,13 @@ void* clients_handler(void *arg)
     int offset;
     int bytes_received;
     char buffer[DATA_MAX_LENGTH];
+    struct timeval tv;
 
     listener = *(int *)arg;
     FD_ZERO(&master);
     FD_ZERO(&read_fds);
+    tv.tv_sec = 2;
+    tv.tv_usec = 500000;
 
     while (true)
     {

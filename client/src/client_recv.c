@@ -1,16 +1,5 @@
 #include "client_recv.h"
 
-#define DISCONNECT                       \
-    printf("%s\n", "An error occurred"); \
-    close(fd);                           \
-    exit(1);
-
-#define ASSERT(expr) \
-    if (!(expr))     \
-    {                \
-        DISCONNECT   \
-    }
-
 static void handle_recv_from_server(char *buffer, int length)
 {
     responses_e response;

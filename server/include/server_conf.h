@@ -26,6 +26,12 @@
 #define BACKUP_ROOT_PATH "backup_root"
 #define DATA_MAX_LENGTH 256
 
+typedef struct
+{
+    int sockfd;
+    char name[NAME_MAX_LENGTH];
+} client_t;
+
 extern DIR *backup_root_dir;
 extern uint8_t connected_clients;
 extern fd_set master;

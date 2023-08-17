@@ -10,6 +10,7 @@
         "clients.h": "c",
         "client_ui.h": "c",
         "client_requests.h": "c",
-        "client_responses.h": "c"
+        "client_responses.h": "c",
+        "protocol.h": "c"
     }
 }

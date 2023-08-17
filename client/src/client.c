@@ -2,8 +2,8 @@
 #include "client_recv.h"
 #include "client_ui.h"
 
-#define EXIT_PROGRAM(msg)                   \
-    fprintf(stderr, "%s\n", msg);   \
+#define EXIT_PROGRAM(msg)         \
+    fprintf(stderr, "%s\n", msg); \
     exit(1);
 
 client_t client;
@@ -11,6 +11,7 @@ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 bool is_received = false;
 actions_e action;
+FILE *current;
 
 static int client_find_server_valid_socket(struct addrinfo *servinfo)
 {
@@ -43,7 +44,7 @@ static int client_find_server_valid_socket(struct addrinfo *servinfo)
 
 /**
  * @brief gets the client's socket file descriptor
- * 
+ *
  * @return int client socket file descriptor on success, else NULL
  */
 static int backup_client_get_socket()
@@ -52,7 +53,7 @@ static int backup_client_get_socket()
     struct addrinfo hints;
     struct addrinfo *server_info;
     int8_t err;
-    
+
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -68,9 +69,9 @@ static int backup_client_get_socket()
 
 /**
  * @brief cleans up resources before exiting the program
- * 
+ *
  */
-static void backup_client_cleanup() 
+static void backup_client_cleanup()
 {
     printf("\n%s\n", "Disconnecting...");
     exit(1);
@@ -78,7 +79,7 @@ static void backup_client_cleanup()
 
 /**
  * @brief runs the backup client
- * 
+ *
  */
 static void client_run()
 {

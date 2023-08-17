@@ -20,26 +20,26 @@ pthread_mutex_unlock(&mutex); */
 
 #define SERVER_FULL_MSG "server currently full"
 
-#define EXIT(msg)                 \
+#define EXIT_PROGRAM(msg)         \
     fprintf(stderr, "%s\n", msg); \
     exit(1);
 
-#define CREATE_BACKUP_ROOT_DIR                                \
-    errno = 0;                                                \
-    if (mkdir(BACKUP_ROOT_PATH, S_IRWXU) == -1)               \
-    {                                                         \
-        switch (errno)                                        \
-        {                                                     \
-        case EACCES:                                          \
+#define CREATE_BACKUP_ROOT_DIR                                        \
+    errno = 0;                                                        \
+    if (mkdir(BACKUP_ROOT_PATH, S_IRWXU) == -1)                       \
+    {                                                                 \
+        switch (errno)                                                \
+        {                                                             \
+        case EACCES:                                                  \
             EXIT_PROGRAM("the parent directory does not allow write") \
-        case EEXIST:                                          \
+        case EEXIST:                                                  \
             EXIT_PROGRAM("path name already exists")                  \
-        case ENAMETOOLONG:                                    \
+        case ENAMETOOLONG:                                            \
             EXIT_PROGRAM("pathname is too long")                      \
-        default:                                              \
-            perror("mkdir");                                  \
-            exit(1);                                          \
-        }                                                     \
+        default:                                                      \
+            perror("mkdir");                                          \
+            exit(1);                                                  \
+        }                                                             \
     }
 
 #define OPEN_BACKUP_ROOT_DIR                         \
@@ -175,7 +175,6 @@ static void *backup_server_acceptor(void *arg)
                 fdmax = client_sockfd;
             }
             pthread_mutex_unlock(&mutex);
-
         }
     }
 

@@ -10,6 +10,17 @@
 #include <sys/socket.h>
 #include "client_conf.h"
 
+#define DISCONNECT                       \
+    printf("%s\n", "An error occurred"); \
+    close(fd);                           \
+    exit(1);
+
+#define ASSERT(expr) \
+    if (!(expr))     \
+    {                \
+        DISCONNECT   \
+    }
+
 void client_responses_register(char *buffer);
 void client_responses_login(char *buffer);
 void client_responses_list_files(char *buffer);
