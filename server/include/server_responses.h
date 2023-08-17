@@ -11,10 +11,8 @@
 #include <unistd.h>
 #include "clients_file.h"
 
-void server_responses_register(int fd, uint8_t *buffer);
-void server_responses_login(int fd, uint8_t *buffer);
-void client_list_rooms(client_t *client);
-void client_join_room(client_t *client, uint8_t *buffer);
-void client_send_massage_in_room(client_t *client, uint8_t *buffer, int length);
-void client_send_server_massage_in_room(client_t *client, uint8_t *buffer, int length);
-void client_exit_room(client_t *client);
+void server_responses_register(int fd, char *buffer);
+void server_responses_login(int fd, char *buffer);
+void server_responses_list_user_files(int fd, char *buffer);
+void server_responses_upload_file(int fd, char *buffer);
+void server_responses_download_file(int fd, char *buffer);

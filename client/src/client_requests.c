@@ -77,7 +77,7 @@ void client_requests_upload_file(int sockfd, char *file_path)
     uint8_t file_name_length;
     char content[FRAGMENT_MAX_LENGTH];
     uint16_t content_len;
-    bool is_last;
+    uint8_t is_last;
     uint16_t total_length;
 
     fp = fopen(file_path, "rb");

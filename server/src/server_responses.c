@@ -102,12 +102,39 @@ void server_responses_list_user_files(int fd, char *buffer)
     free(files_list);
 }
 
-void server_responses_upload_file(int fd, uint8_t *buffer)
+void server_responses_upload_file(int fd, char *buffer)
 {
+    FILE *fp;
+    uint8_t is_last;
+    uint8_t name_length;
+    char *name;
+    uint8_t file_name_length;
+    char *file_name;
+    uint16_t content_len;
+    char *content ;
+    char *path[FILE_PATH_MAX_LENGTH];
 
+    is_last = (uint8_t)(*(buffer++));
+    name_length = (uint8_t)(*(buffer++));
+    ASSERT(name_length < NAME_MAX_LENGTH && name_length > 0)
+    name = buffer;
+    file_name_length = (uint8_t)(*(buffer++));
+    ASSERT(file_name_length < FILE_NAME_MAX_LENGTH && file_name_length > 0)
+    file_name = buffer;
+    content_len = (uint8_t)(*(buffer++) << 8);
+    content_len = (uint8_t)(*(buffer++));
+    content = buffer;
+
+    name[name_length] = '\0';
+    file_name[file_name_length] = '\0';
+    content[content_len] = '\0';
+    sprintf(path, "../%s", name);
+
+    fp = fopen(path, "ab");
+    
 }
 
-void server_responses_download_file(int fd, uint8_t *buffer)
+void server_responses_download_file(int fd, char *buffer)
 {
 
 }
