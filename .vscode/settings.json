@@ -11,6 +11,8 @@
         "client_ui.h": "c",
         "client_requests.h": "c",
         "client_responses.h": "c",
-        "protocol.h": "c"
+        "protocol.h": "c",
+        "clients_file.h": "c",
+        "server_responses.h": "c"
     }
 }

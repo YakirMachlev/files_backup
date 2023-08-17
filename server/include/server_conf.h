@@ -25,12 +25,25 @@
 #define MAX_CLIENTS 150
 #define BACKUP_ROOT_PATH "backup_root"
 #define DATA_MAX_LENGTH 256
+#define ERROR_LENGTH 2
 
 typedef struct
 {
     int sockfd;
     char name[NAME_MAX_LENGTH];
 } client_t;
+
+#define CLIENT_DISCONNECT                                  \
+    printf("Client %d disconnected\n", connected_clients); \
+    close(fd);                                 \
+    connected_clients--;                                   \
+    exit(1);
+
+#define ASSERT(expression) \
+    if (!(expression))     \
+    {                      \
+        CLIENT_DISCONNECT  \
+    }
 
 extern DIR *backup_root_dir;
 extern uint8_t connected_clients;
