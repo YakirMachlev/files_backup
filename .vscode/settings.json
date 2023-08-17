@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "server_conf.h": "c",
+        "pthread.h": "c",
+        "server_client.h": "c",
+        "netdb.h": "c",
+        "errno.h": "c",
+        "client_conf.h": "c",
+        "client_recv.h": "c",
+        "clients.h": "c",
+        "client_ui.h": "c",
+        "client_requests.h": "c",
+        "client_responses.h": "c"
+    }
+}
