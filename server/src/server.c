@@ -9,6 +9,40 @@ pthread_mutex_t mutex;
 
 #define SERVER_FULL_MSG "server currently full"
 
+#define EXIT_PROGRAM(msg)         \
+    fprintf(stderr, "%s\n", msg); \
+    exit(1);
+
+#define CREATE_BACKUP_ROOT_DIR                                        \
+    errno = 0;                                                        \
+    if (mkdir(BACKUP_ROOT_NAME, S_IRWXU) == -1)                       \
+    {                                                                 \
+        switch (errno)                                                \
+        {                                                             \
+        case EACCES:                                                  \
+            EXIT_PROGRAM("the parent directory does not allow write") \
+        case EEXIST:                                                  \
+            EXIT_PROGRAM("the directory already exists")              \
+        case ENAMETOOLONG:                                            \
+            EXIT_PROGRAM("pathname is too long")                      \
+        default:                                                      \
+            perror("mkdir");                                          \
+        }                                                             \
+    }
+
+#define OPEN_BACKUP_ROOT_DIR                         \
+    backup_root_dir = opendir(BACKUP_ROOT_NAME);     \
+    if (errno == ENOENT)                             \
+    {                                                \
+        CREATE_BACKUP_ROOT_DIR                       \
+        backup_root_dir = opendir(BACKUP_ROOT_NAME); \
+    }                                                \
+    if (!backup_root_dir)                            \
+    {                                                \
+        perror("Problem opening directory");         \
+        exit(1);                                     \
+    }
+
 /**
  * @brief cleans up resources before exiting the program
  *
@@ -103,7 +137,7 @@ static void *backup_server_acceptor(void *arg)
     int listener;
     int client_sockfd;
     char server_full_buffer[24];
-    
+
     puts("Waiting for connections...");
     sprintf(server_full_buffer, "%c%c%21s", (uint8_t)SERVER_FULL_RESPONSE, 21, SERVER_FULL_MSG);
     listener = *(int *)arg;
@@ -147,7 +181,9 @@ static void backup_server_run()
     pthread_t clients_handler_thread;
     int listener;
 
-    OPEN_DIR(BACKUP_ROOT_NAME)
+    OPEN_BACKUP_ROOT_DIR
+    chdir(BACKUP_ROOT_NAME);
+
     signal(SIGINT, backup_server_cleanup);
     listener = backup_server_get_listener_socket();
 

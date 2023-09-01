@@ -1,0 +1,2 @@
+gcc source/* -I include/ -o taskManager -Wall -ansi -pedantic
+gcc source/* -I include/ -o taskManager -Wall -ansi -pedantic

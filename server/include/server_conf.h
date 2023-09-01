@@ -25,7 +25,7 @@
 #define PORT "1234"
 #define MAX_CLIENTS 150
 #define BACKUP_ROOT_NAME "backup_root"
-#define ERROR_LENGTH 3
+#define VALIDITY_RESPONSE_LENGTH 3
 
 typedef struct
 {
@@ -44,39 +44,22 @@ typedef struct
         CLIENT_DISCONNECT  \
     }
 
-#define EXIT_PROGRAM(msg)         \
-    fprintf(stderr, "%s\n", msg); \
-    exit(1);
-
-#define CREATE_DIR(dir_name)                                          \
-    errno = 0;                                                        \
-    if (mkdir(dir_name, S_IRWXU) == -1)                               \
-    {                                                                 \
-        switch (errno)                                                \
-        {                                                             \
-        case EACCES:                                                  \
-            EXIT_PROGRAM("the parent directory does not allow write") \
-        case EEXIST:                                                  \
-            EXIT_PROGRAM("path name already exists")                  \
-        case ENAMETOOLONG:                                            \
-            EXIT_PROGRAM("pathname is too long")                      \
-        default:                                                      \
-            perror("mkdir");                                          \
-            exit(1);                                                  \
-        }                                                             \
-    }
-
-#define OPEN_DIR(dir_name)                   \
-    backup_root_dir = opendir(dir_name);     \
-    if (errno == ENOENT)                     \
-    {                                        \
-        CREATE_DIR(dir_name)                 \
-        backup_root_dir = opendir(dir_name); \
-    }                                        \
-    if (!backup_root_dir)                    \
-    {                                        \
-        perror("Problem opening directory"); \
-        exit(1);                             \
+#define CREATE_DIR(dir_name)                                                      \
+    errno = 0;                                                                    \
+    if (mkdir(dir_name, S_IRWXU) == -1)                                           \
+    {                                                                             \
+        switch (errno)                                                            \
+        {                                                                         \
+        case EACCES:                                                              \
+            fprintf(stderr, "%s\n", "the parent directory does not allow write"); \
+            break;                                                                \
+        case EEXIST:                                                              \
+            break;                                                                \
+        case ENAMETOOLONG:                                                        \
+            fprintf(stderr, "%s\n", "pathname too long"); \
+        default:                                                                  \
+            perror("mkdir");                                                      \
+        }                                                                         \
     }
 
 extern DIR *backup_root_dir;

@@ -81,7 +81,7 @@ uint16_t file_read(char *buffer, uint16_t size, FILE *stream)
         }
         buffer[offset] = c;
     }
-    return offset + 1;
+    return offset;
 }
 
 void client_requests_upload_file(int sockfd)
@@ -101,26 +101,20 @@ void client_requests_upload_file(int sockfd)
     {
         printf("Enter the absolute path of the file that you want to upload\n> ");
         scanf("%s", file_path);
-        fp = fopen(file_path, "r");
+        fp = fopen(file_path, "rb");
     }
-    puts("a");
     is_last = 0;
     file_name = strrchr(file_path, '/') + 1;
-    puts("b");
     file_name_length = strlen(file_name);
-    puts("c");
 
     while ((content_len = file_read(content, FRAGMENT_MAX_LENGTH, fp)) == FRAGMENT_MAX_LENGTH)
     {
-        puts("d");
-        total_length = sprintf(buffer, "%c%c%c%s%c%s%hd%s", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
-        puts("e");
+        total_length = sprintf(buffer, "%c%c%c%s%c%s%c%c%s", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, (content_len >> 8) & 0xFF, content_len & 0xFF, content);
         printf("%d,%d,%d,%s,%d,%s,%hd,%s\n", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
         send(sockfd, buffer, total_length, 0);
     }
     is_last = 1;
-    puts("f");
-    total_length = sprintf(buffer, "%c%c%c%s%c%s%hd%s", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
+    total_length = sprintf(buffer, "%c%c%c%s%c%s%c%c%s", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, (content_len >> 8) & 0xFF, content_len & 0xFF, content);
     printf("%d,%d,%d,%s,%d,%s,%hd,%s\n", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
     send(sockfd, buffer, total_length, 0);
 }

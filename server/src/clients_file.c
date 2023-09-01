@@ -88,7 +88,7 @@ void insert_client_to_file(char *name, char *password)
     FILE *fp;
 
     pthread_mutex_lock(&file_lock);
-    fp = fopen("users.txt", "a");
+    fp = fopen("../users.txt", "a");
     if (fp)
     {
         fputs(name, fp);
@@ -109,7 +109,7 @@ bool client_file_does_client_exist(char *name)
     uint8_t length;
 
     pthread_mutex_lock(&file_lock);
-    fp = fopen("users.txt", "r");
+    fp = fopen("../users.txt", "r");
     exists = false;
     if (fp)
     {
@@ -143,7 +143,7 @@ bool client_file_check_client_validity(char *name, char *password)
     bool valid;
 
     pthread_mutex_lock(&file_lock);
-    fp = fopen("users.txt", "r");
+    fp = fopen("../users.txt", "r");
     valid = false;
     if (fp)
     {
