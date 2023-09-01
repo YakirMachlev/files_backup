@@ -1,6 +1,5 @@
 #pragma once
 
-#define __USE_MISC
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

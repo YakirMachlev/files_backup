@@ -1,6 +1,5 @@
 #pragma once
 
-#define __USE_XOPEN2K
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

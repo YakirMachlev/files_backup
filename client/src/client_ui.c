@@ -61,7 +61,6 @@ void client_ui_first_hierarchy(int sockfd)
 void client_ui_second_hierarchy(int sockfd)
 {
     char option;
-    FILE *fp;
     char file_path[FILE_PATH_MAX_LENGTH];
     char file_name[FILE_NAME_MAX_LENGTH];
     bool valid;

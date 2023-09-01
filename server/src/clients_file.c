@@ -43,7 +43,6 @@ uint8_t count_files_in_directory(DIR *folder)
 DIR *open_folder(char *path)
 {
     DIR *folder;
-    struct dirent *result;
     struct stat sb;
 
     folder = NULL;

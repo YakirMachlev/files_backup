@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/select.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
@@ -24,7 +25,6 @@
 #define PORT "1234"
 #define MAX_CLIENTS 150
 #define BACKUP_ROOT_PATH "backup_root"
-#define DATA_MAX_LENGTH 256
 #define ERROR_LENGTH 3
 
 typedef struct
@@ -35,7 +35,7 @@ typedef struct
 
 #define CLIENT_DISCONNECT                                  \
     printf("Client %d disconnected\n", connected_clients); \
-    close(fd);                                 \
+    close(fd);                                             \
     connected_clients--;                                   \
     exit(1);
 

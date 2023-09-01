@@ -115,6 +115,6 @@ void client_requests_download_file(int sockfd, char *file_name)
     char buffer[FILE_NAME_MAX_LENGTH + NAME_MAX_LENGTH + 4];
     uint8_t total_length;
 
-    total_length = sprintf(buffer, "%c%c%s%c%s", (uint8_t)DOWNLOAD_FILE_REQUEST, client.name_length, client.name, strlen(file_name), file_name);
+    total_length = sprintf(buffer, "%c%c%s%c%s", (uint8_t)DOWNLOAD_FILE_REQUEST, client.name_length, client.name, (uint8_t)(strlen(file_name)), file_name);
     send(sockfd, buffer, total_length, 0);
 }

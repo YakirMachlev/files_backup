@@ -11,7 +11,7 @@ pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 bool is_received = false;
 actions_e action;
-FILE *current;
+FILE *current_file;
 
 static int client_find_server_valid_socket(struct addrinfo *servinfo)
 {

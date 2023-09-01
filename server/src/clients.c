@@ -3,7 +3,6 @@
 void handle_client_request(int fd, char *buffer)
 {
     uint8_t opcode;
-    int bytes_received;
 
     opcode = *(buffer++);
     printf("request: %d\n", opcode);

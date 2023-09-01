@@ -17,6 +17,7 @@
         "string.h": "c",
         "dirent.h": "c",
         "inttypes.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "stat.h": "c"
     }
 }
