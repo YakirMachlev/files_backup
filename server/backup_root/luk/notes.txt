@@ -1,0 +1,11 @@
+header guards
+no globals
+typedef for a struct if not gloably used threw api create it in .c files
+secure io [scanf/printf]
+doxygen
+
+New Rules:
+	Do not use cammelCase only use_this
+	struct_t
+	global_g
+	enum_e

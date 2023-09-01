@@ -110,12 +110,10 @@ void client_requests_upload_file(int sockfd)
     while ((content_len = file_read(content, FRAGMENT_MAX_LENGTH, fp)) == FRAGMENT_MAX_LENGTH)
     {
         total_length = sprintf(buffer, "%c%c%c%s%c%s%c%c%s", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, (content_len >> 8) & 0xFF, content_len & 0xFF, content);
-        printf("%d,%d,%d,%s,%d,%s,%hd,%s\n", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
         send(sockfd, buffer, total_length, 0);
     }
     is_last = 1;
     total_length = sprintf(buffer, "%c%c%c%s%c%s%c%c%s", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, (content_len >> 8) & 0xFF, content_len & 0xFF, content);
-    printf("%d,%d,%d,%s,%d,%s,%hd,%s\n", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
     send(sockfd, buffer, total_length, 0);
 }
 
