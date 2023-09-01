@@ -17,7 +17,7 @@ uint16_t create_files_list(char *files_list, DIR *folder)
         {
             file_name_length = strlen(result->d_name);
             *(files_list++) = (char)file_name_length;
-            strncpy(files_list, result->d_name, file_name_length);
+            strcpy(files_list, result->d_name);
             files_list += file_name_length;
         }
     }

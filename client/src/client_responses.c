@@ -51,25 +51,27 @@ void client_responses_list_files(char *buffer)
     uint8_t result;
     uint8_t offset;
     uint8_t file_name_len;
-    char file_name[FILE_NAME_MAX_LENGTH];
+    uint8_t next_file_name_len;
 
     result = *(buffer++);
     action = SECOND_HIERARCHY;
-    if (result == 0  && !*buffer)
+    if (result == 0 && !*buffer)
     {
         puts("List files failed");
     }
     else
     {
         /* result is the amount of files */
+        puts("Your files are:");
+        file_name_len = *(buffer++);
         for (offset = 0; offset < result; offset++)
         {
-            file_name_len = *(buffer++);
-            strncpy(file_name, buffer, file_name_len);
-            file_name[file_name_len] = '\0';
-            printf("%s\n", file_name);
+            next_file_name_len = *(buffer + file_name_len);
+            *(buffer + file_name_len) = '\0';
+            printf("%s\n", buffer);
 
-            buffer += file_name_len;
+            buffer += file_name_len + 1;
+            file_name_len = next_file_name_len;
         }
         puts("");
     }
@@ -100,20 +102,25 @@ void client_responses_download_file(char *buffer)
     bool is_last;
     uint16_t content_length;
 
+    action = NONE;
     is_last = *(buffer++);
     content_length = *(buffer++) << 8;
     content_length |= *(buffer++);
 
-    action = SECOND_HIERARCHY;
-    fwrite(buffer, content_length, 1, current_file);
-    if (is_last)
+    if (content_length)
     {
-        fclose(current_file);
+        /* fwrite(buffer, content_length, 1, current_file); */
+        fputs(buffer, current_file);
+        if (is_last)
+        {
+            fclose(current_file);
+            action = SECOND_HIERARCHY;
+        }
+        puts("downloaded the file successfully\n");
     }
-    if (content_length == 0)
+    else
     {
-        puts("Failed to download the given file");
-        action = EXIT;
+        puts("Failed to download the given file\n");
     }
 }
 
