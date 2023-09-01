@@ -62,7 +62,7 @@ void client_requests_login(int sockfd)
 
 void client_requests_list_user_files(int sockfd)
 {
-    char buffer[NAME_MAX_LENGTH + 2];
+    char buffer[NAME_MAX_LENGTH + 3];
     uint8_t total_length;
 
     total_length = sprintf(buffer, "%c%c%s", (uint8_t)LIST_USER_FILES_REQUEST, client.name_length, client.name);
@@ -84,10 +84,11 @@ uint16_t file_read(char *buffer, uint16_t size, FILE *stream)
     return offset + 1;
 }
 
-void client_requests_upload_file(int sockfd, char *file_path)
+void client_requests_upload_file(int sockfd)
 {
     FILE *fp;
     char buffer[DATA_MAX_LENGTH];
+    char file_path[FILE_PATH_MAX_LENGTH];
     char *file_name;
     uint8_t file_name_length;
     char content[FRAGMENT_MAX_LENGTH];
@@ -95,26 +96,52 @@ void client_requests_upload_file(int sockfd, char *file_path)
     uint8_t is_last;
     uint16_t total_length;
 
-    fp = fopen(file_path, "rb");
+    fp = NULL;
+    while (!fp)
+    {
+        printf("Enter the absolute path of the file that you want to upload\n> ");
+        scanf("%s", file_path);
+        fp = fopen(file_path, "r");
+    }
+    puts("a");
     is_last = 0;
-    file_name = strrchr(file_path, '/');
+    file_name = strrchr(file_path, '/') + 1;
+    puts("b");
     file_name_length = strlen(file_name);
+    puts("c");
 
     while ((content_len = file_read(content, FRAGMENT_MAX_LENGTH, fp)) == FRAGMENT_MAX_LENGTH)
     {
+        puts("d");
         total_length = sprintf(buffer, "%c%c%c%s%c%s%hd%s", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
+        puts("e");
+        printf("%d,%d,%d,%s,%d,%s,%hd,%s\n", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
         send(sockfd, buffer, total_length, 0);
     }
     is_last = 1;
+    puts("f");
     total_length = sprintf(buffer, "%c%c%c%s%c%s%hd%s", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
+    printf("%d,%d,%d,%s,%d,%s,%hd,%s\n", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
     send(sockfd, buffer, total_length, 0);
 }
 
-void client_requests_download_file(int sockfd, char *file_name)
+void client_requests_download_file(int sockfd)
 {
     char buffer[FILE_NAME_MAX_LENGTH + NAME_MAX_LENGTH + 4];
     uint8_t total_length;
+    char file_path[FILE_PATH_MAX_LENGTH];
+    char file_name[FILE_NAME_MAX_LENGTH];
 
+    printf("Enter the name of the file that you want to download\n> ");
+    scanf("%s", file_name);
+
+    current_file = NULL;
+    while (!current_file)
+    {
+        printf("Enter the absolute path to which you want to download the file\n> ");
+        scanf("%s", file_path);
+        current_file = fopen(file_path, "ab");        
+    }
     total_length = sprintf(buffer, "%c%c%s%c%s", (uint8_t)DOWNLOAD_FILE_REQUEST, client.name_length, client.name, (uint8_t)(strlen(file_name)), file_name);
     send(sockfd, buffer, total_length, 0);
 }

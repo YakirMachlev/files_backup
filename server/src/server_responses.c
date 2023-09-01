@@ -86,7 +86,7 @@ void server_responses_list_user_files(int fd, char *buffer)
     name = buffer;
     ASSERT(name_length < NAME_MAX_LENGTH && name_length > 0)
     name[name_length] = '\0';
-    sprintf(path, "../%s", name); /* not sure! */
+    sprintf(path, "%s", name);
 
     client_folder = open_folder(path);
     if (client_folder)
@@ -133,13 +133,17 @@ void server_responses_upload_file(int fd, char *buffer)
     buffer += file_name_length;
     content_len = (uint8_t)(*(buffer++) << 8);
     content_len |= (uint8_t)(*(buffer++));
+    content_len = 63;
     content = buffer;
-
+/*     printf("rcl: %hd", content_len);
+ */
     name[name_length] = '\0';
     file_name[file_name_length] = '\0';
     content[content_len] = '\0';
-    sprintf(path, "../%s/%s", name, file_name);
+    printf("received: %d,%d,%s,%d,%s,%hd,%s\n", is_last, name_length, name, file_name_length, file_name, content_len, content);
+    sprintf(path, "%s/%s", name, file_name);
 
+    CREATE_DIR(name)
     fp = fopen(path, "ab");
     fputs(content, fp);
 
@@ -187,18 +191,27 @@ void server_responses_download_file(int fd, char *buffer)
     ASSERT(file_name_length < FILE_NAME_MAX_LENGTH && file_name_length > 0)
     file_name = buffer;
 
-    sprintf(path, "../%s/%s", name, file_name);
+    sprintf(path, "%s/%s", name, file_name);
     fp = fopen(path, "rb");
-    is_last = 0;
-    file_name = strrchr(path, '/');
-    file_name_length = strlen(file_name);
 
-    while ((content_len = file_read(content, FRAGMENT_MAX_LENGTH, fp)) == FRAGMENT_MAX_LENGTH)
+    if (fp)
     {
+        is_last = 0;
+        file_name = strrchr(path, '/');
+        file_name_length = strlen(file_name);
+
+        while ((content_len = file_read(content, FRAGMENT_MAX_LENGTH, fp)) == FRAGMENT_MAX_LENGTH)
+        {
+            total_length = sprintf(send_buffer, "%c%c%hd%s", (uint8_t)DOWNLOAD_FILE_RESPONSE, is_last, content_len, content);
+            send(fd, send_buffer, total_length, 0);
+        }
+        is_last = 1;
         total_length = sprintf(send_buffer, "%c%c%hd%s", (uint8_t)DOWNLOAD_FILE_RESPONSE, is_last, content_len, content);
-        send(fd, send_buffer, total_length, 0);
+        send(fd, send_buffer, total_length, 0);        
     }
-    is_last = 1;
-    total_length = sprintf(send_buffer, "%c%c%hd%s", (uint8_t)DOWNLOAD_FILE_RESPONSE, is_last, content_len, content);
-    send(fd, send_buffer, total_length, 0);
+    else
+    {
+        total_length = sprintf(send_buffer, "%c%c%hd%s", (uint8_t)DOWNLOAD_FILE_RESPONSE, 0, 0, "");
+        send(fd, send_buffer, total_length, 0);   
+    }
 }

@@ -4,7 +4,8 @@ static void handle_recv_from_server(char *buffer, int length)
 {
     responses_e response;
 
-    response = (uint8_t) * (buffer++);
+    pthread_mutex_lock(&mutex);
+    response = (uint8_t)*(buffer++);
     switch (response)
     {
     case REGISTER_RESPONSE:
@@ -31,6 +32,9 @@ static void handle_recv_from_server(char *buffer, int length)
         exit(1);
         break;
     }
+    is_received = true;
+    pthread_cond_signal(&cond);
+    pthread_mutex_unlock(&mutex);
 }
 
 void *client_recv(void *arg)

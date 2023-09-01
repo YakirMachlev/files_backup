@@ -16,5 +16,5 @@
 void client_requests_register(int sockfd);
 void client_requests_login(int sockfd);
 void client_requests_list_user_files(int sockfd);
-void client_requests_upload_file(int sockfd, char *file_path);
-void client_requests_download_file(int sockfd, char *file_name);
+void client_requests_upload_file(int sockfd);
+void client_requests_download_file(int sockfd);
