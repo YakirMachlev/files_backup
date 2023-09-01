@@ -10,6 +10,6 @@
  * @param listener_p pointer to the server listener file descriptor
  * @return void* NULL
  */
-void* clients_handler(void *listener_p);
+void* clients_handler();
 
 #endif /* CLIENTS_H */

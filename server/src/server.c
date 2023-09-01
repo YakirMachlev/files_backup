@@ -188,7 +188,7 @@ static void backup_server_run()
     listener = backup_server_get_listener_socket();
 
     pthread_create(&acceptor_thread, NULL, backup_server_acceptor, &listener);
-    pthread_create(&clients_handler_thread, NULL, clients_handler, &listener);
+    pthread_create(&clients_handler_thread, NULL, clients_handler, NULL);
     pthread_join(acceptor_thread, NULL);
     pthread_join(clients_handler_thread, NULL);
 }

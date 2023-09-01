@@ -28,16 +28,14 @@ void handle_client_request(int fd, char *buffer)
     }
 }
 
-void *clients_handler(void *arg)
+void *clients_handler()
 {
-    int listener;
     fd_set read_fds;
     int current_fd;
     int bytes_received;
     char buffer[DATA_MAX_LENGTH];
     struct timeval tv;
 
-    listener = *(int *)arg;
     FD_ZERO(&master);
     FD_ZERO(&read_fds);
     tv.tv_sec = 0;
