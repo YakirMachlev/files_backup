@@ -25,7 +25,7 @@
 #define MAX_CLIENTS 150
 #define BACKUP_ROOT_PATH "backup_root"
 #define DATA_MAX_LENGTH 256
-#define ERROR_LENGTH 2
+#define ERROR_LENGTH 3
 
 typedef struct
 {

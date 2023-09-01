@@ -98,5 +98,6 @@ static void client_run()
 
 int main()
 {
+    client_run();
     return 0;
 }

@@ -1,22 +1,11 @@
 #include "server_conf.h"
 #include "clients.h"
 
-backup_root_dir = NULL;
+DIR *backup_root_dir = NULL;
 uint8_t connected_clients = 0;
 fd_set master;
 int fdmax;
 pthread_mutex_t mutex;
-
-/* pthread_mutex_lock(&mutex);
-is_received = true;
-pthread_cond_signal(&cond);
-pthread_mutex_unlock(&mutex);
-
-pthread_mutex_lock(&mutex);
-is_received = false;
-while (!is_received)
-    pthread_cond_wait(&cond, &mutex);
-pthread_mutex_unlock(&mutex); */
 
 #define SERVER_FULL_MSG "server currently full"
 
@@ -148,8 +137,8 @@ static void *backup_server_acceptor(void *arg)
 {
     int listener;
     int client_sockfd;
-    char server_full_buffer[23];
-
+    char server_full_buffer[24];
+    
     sprintf(server_full_buffer, "%c%c%21s", (uint8_t)SERVER_FULL_RESPONSE, 21, SERVER_FULL_MSG);
     listener = *(int *)arg;
     while (true)
@@ -162,8 +151,9 @@ static void *backup_server_acceptor(void *arg)
         }
         else if (connected_clients > MAX_CLIENTS)
         {
-            send(client_sockfd, server_full_buffer, 23, 0);
+            send(client_sockfd, server_full_buffer, 24, 0);
             close(client_sockfd);
+            connected_clients--;
         }
         else
         {

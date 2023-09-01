@@ -2,6 +2,7 @@
 #define CLIENTS_H
 
 #include "server_conf.h"
+#include "server_responses.h"
 
 /**
  * @brief manage the clients connection to the server

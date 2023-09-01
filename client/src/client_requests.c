@@ -69,6 +69,21 @@ void client_requests_list_user_files(int sockfd)
     send(sockfd, buffer, total_length, 0);
 }
 
+uint16_t file_read(char *buffer, uint16_t size, FILE *stream)
+{
+    uint16_t offset;
+    char c;
+    for (offset = 0; offset < size; offset++)
+    {
+        if ((c = getc(stream)) == EOF)
+        {
+            break;
+        }
+        buffer[offset] = c;
+    }
+    return offset + 1;
+}
+
 void client_requests_upload_file(int sockfd, char *file_path)
 {
     FILE *fp;
@@ -85,19 +100,19 @@ void client_requests_upload_file(int sockfd, char *file_path)
     file_name = strrchr(file_path, '/');
     file_name_length = strlen(file_name);
 
-    while (fgets(buffer, FRAGMENT_MAX_LENGTH, fp))
+    while ((content_len = file_read(content, FRAGMENT_MAX_LENGTH, fp)) == FRAGMENT_MAX_LENGTH)
     {
         total_length = sprintf(buffer, "%c%c%c%s%c%s%hd%s", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
         send(sockfd, buffer, total_length, 0);
     }
     is_last = 1;
-    total_length = sprintf(buffer, "%c%c%c%s%c%s%hd%s", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, 0, 0);
+    total_length = sprintf(buffer, "%c%c%c%s%c%s%hd%s", (uint8_t)UPLOAD_FILE_REQUEST, is_last, client.name_length, client.name, file_name_length, file_name, content_len, content);
     send(sockfd, buffer, total_length, 0);
 }
 
 void client_requests_download_file(int sockfd, char *file_name)
 {
-    char buffer[FILE_NAME_MAX_LENGTH + 2];
+    char buffer[FILE_NAME_MAX_LENGTH + NAME_MAX_LENGTH + 4];
     uint8_t total_length;
 
     total_length = sprintf(buffer, "%c%c%s%c%s", (uint8_t)DOWNLOAD_FILE_REQUEST, client.name_length, client.name, strlen(file_name), file_name);

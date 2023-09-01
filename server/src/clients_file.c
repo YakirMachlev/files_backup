@@ -126,25 +126,35 @@ bool client_file_does_client_exist(char *name)
     return exists;
 }
 
-bool client_file_check_client_validity(char *name, char *password)
+static bool compare_until_char(char *str1, char *str2, char separator)
+{
+    while (*str1 && *str2 && *str1 != separator && *str2 != separator)
     {
-        FILE *fp;
-        char line[MAX_LINE_LENGTH];
-        uint8_t length;
-        bool valid;
-
-        pthread_mutex_lock(&file_lock);
-        fp = fopen("users.txt", "r");
-        valid = false;
-        if (fp)
-        {
-            while (fgets(line, MAX_LINE_LENGTH, fp) && !valid)
-            {
-                length = strchr(line, ',') - line;
-                valid = !strncmp(name, line, length) && !strncmp(password, line + length + 1, PASSWORD_MAX_LENGTH);
-            }
-            fclose(fp);
-        }
-        pthread_mutex_unlock(&file_lock);
-        return length;
+        if (*(str1++) != *(str2++))
+            return false;
     }
+    return true;
+}
+
+bool client_file_check_client_validity(char *name, char *password)
+{
+    FILE *fp;
+    char line[MAX_LINE_LENGTH];
+    uint8_t length;
+    bool valid;
+
+    pthread_mutex_lock(&file_lock);
+    fp = fopen("users.txt", "r");
+    valid = false;
+    if (fp)
+    {
+        while (fgets(line, MAX_LINE_LENGTH, fp) && !valid)
+        {
+            length = strchr(line, ',') - line;
+            valid = !strncmp(name, line, length) && compare_until_char(password, line + length + 1, '\n');
+        }
+        fclose(fp);
+    }
+    pthread_mutex_unlock(&file_lock);
+    return valid;
+}
